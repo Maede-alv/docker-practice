@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    image: localhost:8082/backend-app:latest  # Pull from Nexus
+    build: ./backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=mydatabase
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+
+  frontend:
+    image: localhost:8082/frontend-app:latest  # Pull from Nexus
+    build: ./frontend
+    ports:
+      - "3000:80"
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Persistent storage for database
+
+volumes:
+  pgdata:
